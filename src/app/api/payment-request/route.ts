@@ -25,7 +25,8 @@ export async function POST(req: Request) {
                 "out": false,
                 "amount": amount,
                 "memo": memo,
-                "unit": "USD"
+                "unit": "USD",
+                "webhook": `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/webhook`,
             }),
         });
 
