@@ -9,7 +9,7 @@ type EmailOptions = {
 
 export const sendMail = async ({ to, subject, text, html }: EmailOptions) => {
     const info = await transporter.sendMail({
-        from: `"Voltage Notifier" <${process.env.SMTP_USER}>`,
+        from: `"Payment Notifier" <${process.env.SMTP_USER}>`,
         to,
         subject,
         text,
