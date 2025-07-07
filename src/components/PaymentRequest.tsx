@@ -57,8 +57,15 @@ export default function PaymentRequest() {
     return (
         <div className="flex flex-col items-center w-full justify-center min-h-screen overflow-y-clip px-6 py-20 my-auto">
             <Card className="relative flex-grow justify-center w-full max-w-md bg-white shadow-lg rounded-sm pt-10 my-auto">
-                <CardHeader className=" w-full text-center my-4">
+                <CardHeader className=" w-full text-center mb-4">
+
+
                     <CardTitle className="text-xl font-semibold">
+                        <img
+                            src="/logo.jpg"
+                            alt="Logo"
+                            className="w-20 h-20 rounded-full shadow-lg "
+                        />
                         <span className="text-black">Make </span>
                         <span className="text-green-600 font-bold">Payment</span>
                         <span className="text-black"> Request</span>

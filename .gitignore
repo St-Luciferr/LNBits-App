@@ -40,3 +40,5 @@ yarn-error.log*
 next-env.d.ts
 test*
 logs/
+/src/generated/prisma
+seed.ts

@@ -1,132 +1,90 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { FaPhoneAlt, FaLock } from "react-icons/fa";
-import {
-  Controller,
-  ControllerFieldState,
-  ControllerRenderProps,
-  FieldErrors,
-  FieldValues,
-  FormProvider,
-  useForm,
-  UseFormStateReturn,
-} from "react-hook-form";
-import { z } from "zod";
-import { toast } from "sonner";
-import { zodResolver } from "@hookform/resolvers/zod";
 
-const LoginSchema = z.object({
-  phone: z.string().min(7, "Mobile number is too short"),
-  password: z.string().min(3, "Password must be atleast 3 characters"),
-  remember: z.boolean(),
-});
-
-type LoginSchemaType = z.infer<typeof LoginSchema>;
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { FaEnvelope, FaLock } from "react-icons/fa";
 
 export default function LoginPage() {
-  const methods = useForm<LoginSchemaType>({
-    resolver: zodResolver(LoginSchema),
-    defaultValues: {
-      phone: "",
-      password: "",
-      remember: false,
-    },
-  });
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const onSubmit = (data: LoginSchemaType) => {
-    console.log(data);
-  };
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
 
-  const onError = (errors: FieldErrors<LoginSchemaType>) => {
-    let errorMessage = "Please fix the validation errors before submitting";
-    const firstMessage = Object.values(errors)?.[0]?.message;
-    if (firstMessage && typeof firstMessage === "string") {
-      errorMessage = firstMessage;
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (res?.error) {
+      setError(res.error);
+    } else {
+      router.push("/dashboard");
     }
-    toast.error(errorMessage);
-  };
+  }
 
   return (
-    <FormProvider {...methods}>
-      <form
-        onSubmit={methods.handleSubmit(onSubmit, onError)}
-        className="flex flex-col items-center bg-green-500 w-full justify-center min-h-screen overflow-y-clip px-6 py-20 my-auto"
-      >
-        <Card className="relative flex-grow justify-center w-full max-w-md bg-white shadow-lg rounded-sm pt-10 my-auto">
-          <CardHeader className=" w-full text-center my-4">
-            <CardTitle className="text-xl font-semibold">
-              <span className="text-green-600 font-bold">Welcome!</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 pt-0">
-            <div className="space-y-6">
-              <div className="relative">
-                <FaPhoneAlt className="absolute left-3 top-2 text-gray-500 h-10" />
-                <Input
-                  type="text"
-                  className="pl-10 h-14 text-lg md:text-lg"
-                  placeholder="Mobile number"
-                  {...methods.register("phone")}
-                />
-              </div>
-              <div className="relative">
-                <FaLock className="absolute left-3 top-2 text-gray-500 h-10" />
-                <Input
-                  type="password"
-                  className="pl-10 h-14 text-lg md:text-lg"
-                  placeholder="Password"
-                  {...methods.register("password")}
-                />
-              </div>
-              <Controller
-                render={function ({
-                  field,
-                }: {
-                  field: ControllerRenderProps<FieldValues, string>;
-                  fieldState: ControllerFieldState;
-                  formState: UseFormStateReturn<FieldValues>;
-                }): React.ReactElement {
-                  return (
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          console.log(checked);
-                          field.onChange(checked);
-                        }}
-                        id="terms"
-                        {...methods.register("remember")}
-                      />
-                      <Label htmlFor="terms" className="text-sm text-gray-500">
-                        Remember me
-                      </Label>
-                    </div>
-                  );
-                }}
-                name="remember"
-              />
+    <div className="flex flex-col items-center bg-green-500 justify-center min-h-screen px-6 py-20">
+      <div className="relative w-full max-w-md bg-white shadow-lg rounded-lg p-6 pt-10">
+        <h1 className="text-2xl text-center font-bold text-green-600 mb-6">
+          Welcome!
+        </h1>
 
-              <Button
-                type="submit"
-                className="w-full flex-row bg-green-600 hover:bg-green-700 font-bold text-xl h-14"
-                size="lg"
-              >
-                Login
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        {/* Bottom Text with Equal Spacing */}
-        <div className="flex-grow flex items-center justify-center text-center text-white font-bold ">
-          <p className="text-xl">
-            Your Trusted Partner in Digital Transactions
-          </p>
-        </div>
-      </form>
-    </FormProvider>
+        <form onSubmit={handleLogin} className="space-y-6">
+          {/* Email */}
+          <div className="relative">
+            <FaEnvelope className="absolute left-3 top-3 text-gray-500 h-6 w-6" />
+            <input
+              type="email"
+              id="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full pl-12 pr-4 py-3 border rounded-md shadow-sm text-lg focus:ring-green-500 focus:border-green-500"
+            />
+          </div>
+
+          {/* Password */}
+          <div className="relative">
+            <FaLock className="absolute left-3 top-3 text-gray-500 h-6 w-6" />
+            <input
+              type="password"
+              id="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full pl-12 pr-4 py-3 border rounded-md shadow-sm text-lg focus:ring-green-500 focus:border-green-500"
+            />
+          </div>
+
+          {/* Error message */}
+          {error && (
+            <p className="text-red-600 bg-red-100 text-sm text-center py-2 px-4 rounded-md">
+              {error}
+            </p>
+          )}
+
+          {/* Login Button */}
+          <button
+            type="submit"
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-md font-bold text-lg transition-colors"
+          >
+            Login
+          </button>
+        </form>
+      </div>
+
+      {/* Bottom Text */}
+      <div className="mt-8 text-white text-center font-bold">
+        <p className="text-xl">Your Trusted Partner in Digital Transactions</p>
+      </div>
+    </div>
   );
 }

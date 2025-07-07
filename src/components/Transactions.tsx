@@ -23,14 +23,13 @@ export default function Transactions() {
                 setFilteredTransactions(data);
                 setActiveTransaction(data.slice(0, limit));
                 setNumPages(Math.ceil(data.length / limit));
-                console.log("Number of pages:", numPages);
             } catch (error) {
                 console.error("Error fetching transactions:", error);
             }
             setLoading(false);
         };
         fetchTransactions();
-    },[]);
+    }, []);
 
     useEffect(() => {
         const fetchPages = async () => {
@@ -41,9 +40,9 @@ export default function Transactions() {
             }
         };
         fetchPages();
-    }, [page, filter]);
+    }, [page, filter, filteredTransactions]);
 
-    const filteTransactions = (applyFilter: string) => {
+    const filterTransactions = (applyFilter: string) => {
         if (applyFilter === "all") {
             setFilteredTransactions(transactions);
             setNumPages(Math.ceil(transactions.length / limit));
@@ -69,17 +68,17 @@ export default function Transactions() {
             <div className="flex justify-between items-center mb-4">
                 <button
                     className={`bg-gray-100 shadow-sm px-4 py-2 rounded-lg w-24 md:w-30 ${filter === "all" ? "bg-green-200" : ""}`}
-                    onClick={() => filteTransactions("all")}>
+                    onClick={() => filterTransactions("all")}>
                     All
                 </button>
                 <button
                     className={`bg-gray-100 shadow-sm px-4 py-2 rounded-lg w-24 md:w-30 ${filter === "withdraw" ? "bg-green-200" : ""}`}
-                    onClick={() => filteTransactions("withdraw")}>
+                    onClick={() => filterTransactions("withdraw")}>
                     Withdraw
                 </button>
                 <button
                     className={`bg-gray-100 shadow-sm px-4 py-2 rounded-lg w-24 md:w-30 ${filter === "deposit" ? "bg-green-200" : ""}`}
-                    onClick={() => filteTransactions("deposit")}>
+                    onClick={() => filterTransactions("deposit")}>
                     Deposit
                 </button>
             </div>

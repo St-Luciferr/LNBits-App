@@ -37,15 +37,17 @@ export async function GET(req: Request) {
         }
         const formattedTransactions = data.filter((tx: Transaction) => tx.status === "success")
             .map((tx: Transaction) => {
-                const amountValue = tx.extra?.fiat_amount ?? tx.extra?.wallet_fiat_amount ?? 0; // Ensure fallback value
+                const amountValue = tx.extra?.fiat_amount ?? tx.extra?.wallet_fiat_amount ?? 0; 
                 return {
                     memo: tx.memo || "No Description",
-                    date: new Date(tx.time * 1000).toLocaleString(), // Convert UNIX timestamp to readable date
-                    amount: amountValue, // Display amount in USD
-                    color: amountValue > 0 ? "text-green-600" : "text-red-500", // Green for positive, Red for negative
+                    date: new Date(tx.time * 1000).toLocaleString("en-US", {
+                        timeZone: "America/Chicago",
+                    }),
+                    amount: amountValue, 
+                    color: amountValue > 0 ? "text-green-600" : "text-red-500", 
                 };
             });
-        return NextResponse.json(formattedTransactions); // Return fetched payments
+        return NextResponse.json(formattedTransactions); 
     } catch (error) {
         console.error("Internal Server Error:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

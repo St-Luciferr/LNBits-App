@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { TransactionResponse } from "@/interfaces/transactions";
 import { PaymentHistory } from "@/interfaces/payment_history";
 import { satsToUsd } from "@/utils/sats_to_usd";
@@ -64,13 +64,13 @@ export default function Statement() {
         setFilteredTransactions(filtered);
         setNumPages(Math.ceil(filtered.length / limit));
         setPage(1);
-    }, [searchQuery]);
+    }, [searchQuery, transactions]);
 
     useEffect(() => {
         setActiveTransaction(filteredTransactions.slice((page - 1) * limit, page * limit));
     }, [page, filteredTransactions]);
 
-    const applyDateFilter = () => {
+    const applyDateFilter = useCallback(() => {
         const filtered = transactions.filter(tx => {
             const txDate = new Date(tx.date);
             return (!fromDate || txDate >= new Date(fromDate)) && (!toDate || txDate <= new Date(toDate));
@@ -78,13 +78,13 @@ export default function Statement() {
         setFilteredTransactions(filtered);
         setNumPages(Math.ceil(filtered.length / limit));
         setPage(1);
-    };
+    }, [fromDate, toDate, transactions]);
 
     useEffect(() => {
         if (fromDate || toDate) {
             applyDateFilter();
         }
-    }, [fromDate, toDate]);
+    }, [fromDate, toDate, applyDateFilter]);
 
 
     const filterByTime = (period: "day" | "week" | "month") => {
